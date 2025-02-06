@@ -5,5 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+    
+  <PropertyGroup>
+    <Authors>Cody Peck</Authors>
+    <Description>A collection of extensions to the TPL Dataflow library.</Description>
+    <Copyright>Copyright (c) Cody Peck 2025</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/codyspeck/speck</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/codyspeck/speck</RepositoryUrl>
+    <Version>0.1.0-preview.1</Version>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+    
 </Project>
