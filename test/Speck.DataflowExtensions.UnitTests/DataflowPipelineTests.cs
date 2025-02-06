@@ -26,9 +26,22 @@ public class DataflowPipelineTests
         }
     }
 
+    public class TestException : Exception;
+
     private readonly Fixture _fixture = new();
     private readonly Observer<string> _observer = new();
 
+    [Test]
+    public async Task Disposing_pipeline_throws_captured_exception()
+    {
+        var pipeline = new DataflowPipelineBuilder<string>()
+            .Build(_ => throw new TestException());
+        
+        await pipeline.SendAsync(_fixture.Create<string>());
+        
+        await Should.ThrowAsync<TestException>(pipeline.DisposeAsync().AsTask());
+    }
+    
     [Test]
     public async Task Disposing_pipeline_ignores_operation_canceled_exceptions()
     {
