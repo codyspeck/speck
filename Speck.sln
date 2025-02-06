@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A2E45E7C-E3E3-492F-9853-AD4E9212AD38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speck.DataflowExtensions", "src\Speck.DataflowExtensions\Speck.DataflowExtensions.csproj", "{294CF515-9CF7-4E55-A2E4-D35CD0BA8931}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{0A0C2EBC-845F-4150-BB1C-73515BEEC354}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4307A138-F672-489A-A25B-9EDC70786AC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speck.DataflowExtensions.UnitTests", "test\Speck.DataflowExtensions.UnitTests\Speck.DataflowExtensions.UnitTests.csproj", "{05DFA488-220C-4530-B9AF-913338055D9B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05DFA488-220C-4530-B9AF-913338055D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05DFA488-220C-4530-B9AF-913338055D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05DFA488-220C-4530-B9AF-913338055D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05DFA488-220C-4530-B9AF-913338055D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931} = {A2E45E7C-E3E3-492F-9853-AD4E9212AD38}
+		{05DFA488-220C-4530-B9AF-913338055D9B} = {4307A138-F672-489A-A25B-9EDC70786AC0}
+	EndGlobalSection
+EndGlobal
