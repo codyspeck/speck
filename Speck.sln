@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4307A138-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speck.DataflowExtensions.UnitTests", "test\Speck.DataflowExtensions.UnitTests\Speck.DataflowExtensions.UnitTests.csproj", "{05DFA488-220C-4530-B9AF-913338055D9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speck.HttpExtensions", "src\Speck.HttpExtensions\Speck.HttpExtensions.csproj", "{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speck.HttpExtensions.UnitTests", "test\Speck.HttpExtensions.UnitTests\Speck.HttpExtensions.UnitTests.csproj", "{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,9 +39,19 @@ Global
 		{05DFA488-220C-4530-B9AF-913338055D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05DFA488-220C-4530-B9AF-913338055D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05DFA488-220C-4530-B9AF-913338055D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{294CF515-9CF7-4E55-A2E4-D35CD0BA8931} = {A2E45E7C-E3E3-492F-9853-AD4E9212AD38}
 		{05DFA488-220C-4530-B9AF-913338055D9B} = {4307A138-F672-489A-A25B-9EDC70786AC0}
+		{830FA0CB-AD74-4F8F-AC3F-414CCB4EDE15} = {A2E45E7C-E3E3-492F-9853-AD4E9212AD38}
+		{1F6514E7-D416-46A8-9EEC-83E0ADEDE4AA} = {4307A138-F672-489A-A25B-9EDC70786AC0}
 	EndGlobalSection
 EndGlobal
