@@ -28,5 +28,5 @@ public class AuthorizationConfiguration
     /// <summary>
     /// The url of the token endpoint.
     /// </summary>
-    public Uri? TokenUri { get; set; }
+    public required Uri TokenUri { get; set; }
 }

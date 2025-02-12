@@ -35,7 +35,7 @@ public static class MockHttpMessageHandlerExtensions
         int expiresIn)
     {
         mockHttpMessageHandler
-            .Expect(HttpMethod.Post, configuration.TokenUri!.ToString())
+            .Expect(HttpMethod.Post, configuration.TokenUri.ToString())
             .WithFormData("audience", configuration.Audience)
             .WithFormData("client_id", configuration.ClientId)
             .WithFormData("client_secret", configuration.ClientSecret)
