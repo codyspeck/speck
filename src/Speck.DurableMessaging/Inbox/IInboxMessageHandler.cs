@@ -1,4 +1,4 @@
-﻿namespace Speck.DurableMessaging;
+﻿namespace Speck.DurableMessaging.Inbox;
 
 /// <summary>
 /// Represents a class that handles inbox messages.

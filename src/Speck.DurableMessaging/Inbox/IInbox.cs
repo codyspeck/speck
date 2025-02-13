@@ -1,4 +1,4 @@
-﻿namespace Speck.DurableMessaging;
+﻿namespace Speck.DurableMessaging.Inbox;
 
 /// <summary>
 /// Exposes methods for interfacing with an inbox messages database table.
@@ -10,5 +10,5 @@ public interface IInbox
     /// </summary>
     /// <param name="message">The inbox message.</param>
     /// <returns>A task.</returns>
-    Task InsertAsync(object message);
+    Task InsertAsync<TMessage>(TMessage message);
 }

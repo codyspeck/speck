@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Speck.DurableMessaging.Inbox;
 
 namespace Speck.DurableMessaging.MySql;
 
@@ -12,6 +13,7 @@ public static class DurableMessagingConfigurationExtensions
     public static DurableMessagingConfiguration UseMySql(this DurableMessagingConfiguration configuration)
     {
         configuration.Services.AddTransient<IInbox, MySqlInbox>();
+        configuration.Services.AddTransient<IInboxMessageRepository, MySqlInboxMessageRepository>();
         
         return configuration;
     }

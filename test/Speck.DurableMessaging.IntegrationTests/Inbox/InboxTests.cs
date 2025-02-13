@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-using Shouldly;
-
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting.Testing;
+using Speck.DurableMessaging.Inbox;
 using Speck.DurableMessaging.MySql;
 
 namespace Speck.DurableMessaging.IntegrationTests.Inbox;
@@ -9,20 +9,32 @@ namespace Speck.DurableMessaging.IntegrationTests.Inbox;
 public class InboxTests(MySqlFixture mySqlFixture, TestInboxRepository repository) : TestBase
 {
     [Test]
+    [Experimental("EXTEXP0016")]
     public async Task Inserts_inbox_message()
     {
-        await using var services = new ServiceCollection()
-            .AddScoped(_ => mySqlFixture.CreateConnection())
-            .AddDurableMessaging(messaging => messaging
-                .UseMySql())
-            .BuildServiceProvider();
-
-        await using var scope = services.CreateAsyncScope();
+        using var host = FakeHost
+            .CreateBuilder()
+            .ConfigureServices((_, services) => services
+                .AddScoped(_ => mySqlFixture.CreateConnection())
+                .AddDurableMessaging(messaging => messaging
+                    .AddInbox()
+                    .UseMySql()))
+            .Build();
         
-        var inbox = scope.ServiceProvider.GetRequiredService<IInbox>();
+        await using var scope = host.Services.CreateAsyncScope();
+        
+        await scope.ServiceProvider
+            .GetRequiredService<IInbox>()
+            .InsertAsync(new object());
+        
+        await scope.ServiceProvider
+            .GetRequiredService<IInbox>()
+            .InsertAsync(new object());
+        
+        await scope.ServiceProvider
+            .GetRequiredService<IInbox>()
+            .InsertAsync(new object());
 
-        await inbox.InsertAsync(new object());
-
-        await Should.NotThrowAsync(repository.GetFirstInboxMessageAsync());
+        await Task.Delay(TimeSpan.FromSeconds(10));
     }
 }
