@@ -14,5 +14,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.2" />
   </ItemGroup>
+    
+  <ItemGroup>
+    <ProjectReference Include="..\Speck.DataflowExtensions\Speck.DataflowExtensions.csproj" />
+  </ItemGroup>
 
 </Project>

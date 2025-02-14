@@ -1,6 +1,6 @@
 ﻿namespace Speck.DurableMessaging.Inbox;
 
-public interface IInboxMessageRepository
+internal interface IInboxMessageRepository
 {
     Task<IReadOnlyCollection<InboxMessage>> GetInboxMessagesAsync(string inboxMessageTable, int count);
 }

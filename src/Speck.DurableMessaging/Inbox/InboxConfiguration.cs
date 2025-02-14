@@ -21,9 +21,7 @@ public class InboxConfiguration
     public InboxConfiguration WithTable(string table)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(table);
-
         Table = table;
-
         return this;
     }
     
@@ -36,9 +34,7 @@ public class InboxConfiguration
     public InboxConfiguration WithPollSize(int pollSize)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(pollSize, 0);
-        
         PollSize = pollSize;
-        
         return this;
     }
 
@@ -51,9 +47,7 @@ public class InboxConfiguration
     public InboxConfiguration WithIdlePollingInterval(TimeSpan idlePollingInterval)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(idlePollingInterval, TimeSpan.Zero);
-        
         IdlePollingInterval = idlePollingInterval;
-        
         return this;
     }
 }

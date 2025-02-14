@@ -1,6 +1,10 @@
 ﻿namespace Speck.DurableMessaging.Inbox;
 
-public class InboxMessage
+internal class InboxMessage
 {
     public Guid Id { get; init; }
+
+    public string Type { get; init; } = string.Empty;
+
+    public DateTime CreatedAt { get; init; }
 }

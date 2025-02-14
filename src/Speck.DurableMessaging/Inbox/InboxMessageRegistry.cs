@@ -10,4 +10,9 @@ internal class InboxMessageRegistry
         _messageStrings.Add(typeof(TMessage), messageType);
         _messageTypes.Add(messageType, typeof(TMessage));
     }
+
+    public string Get<TMessage>()
+    {
+        return _messageStrings[typeof(TMessage)];
+    }
 }

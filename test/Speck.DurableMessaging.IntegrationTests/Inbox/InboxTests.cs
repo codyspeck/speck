@@ -18,6 +18,9 @@ public class InboxTests(MySqlFixture mySqlFixture, TestInboxRepository repositor
                 .AddScoped(_ => mySqlFixture.CreateConnection())
                 .AddDurableMessaging(messaging => messaging
                     .AddInbox()
+                    .AddInboxMessageHandler<InboxMessageHandler, InboxMessage>("inbox-message", handler => handler
+                        .WithBoundedCapacity(100)
+                        .WithMaxDegreeOfParallelism(1))
                     .UseMySql()))
             .Build();
         
