@@ -6,5 +6,7 @@ internal class InboxMessage
 
     public string Type { get; init; } = string.Empty;
 
+    public string Content { get; init; } = string.Empty;
+
     public DateTime CreatedAt { get; init; }
 }

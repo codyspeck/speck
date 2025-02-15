@@ -3,7 +3,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Speck.DurableMessaging.Inbox;
 
-internal class InboxPollingService(IServiceProvider services, InboxConfiguration configuration) : BackgroundService
+internal class InboxPollingService(
+    IServiceProvider services,
+    InboxConfiguration configuration,
+    InboxMessageTypeCollection inboxMessageTypes,
+    MessageSerializer messageSerializer) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -17,7 +21,13 @@ internal class InboxPollingService(IServiceProvider services, InboxConfiguration
 
             foreach (var inboxMessage in inboxMessages)
             {
-                Console.WriteLine($"Queried inbox message: {inboxMessage.Id}.");
+                var message = messageSerializer.Deserialize(
+                    inboxMessage.Content,
+                    inboxMessageTypes.Get(inboxMessage.Type));
+                
+                await scope.ServiceProvider
+                    .GetRequiredKeyedService<IPipeline>(inboxMessage.Type)
+                    .SendAsync(message);
             }
             
             await Task.Delay(configuration.IdlePollingInterval, stoppingToken);

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Speck.DataflowExtensions;
 using Speck.DurableMessaging.Inbox;
 
 namespace Speck.DurableMessaging;
@@ -8,7 +7,7 @@ public class DurableMessagingConfiguration
 {
     public IServiceCollection Services { get; }
     
-    internal InboxMessageRegistry InboxMessageRegistry { get; } = new();
+    internal InboxMessageTypeCollection InboxMessageTypeCollection { get; } = new();
 
     internal List<InboxConfiguration> InboxConfigurations { get; } = [];
 
@@ -75,22 +74,11 @@ public class DurableMessagingConfiguration
     {
         var configuration = new InboxMessageHandlerConfiguration();
         configure(configuration);
-        InboxMessageRegistry.Add<TMessage>(messageType);
-        Services.AddTransient<IInboxMessageHandler<TMessage>, THandler>();
-        Services.AddSingleton(BuildInboxMessageDataflowPipeline<TMessage>);
+        InboxMessageTypeCollection.Add<TMessage>(messageType);
+        Services
+            .AddTransient<IInboxMessageHandler<TMessage>, THandler>()
+            .AddKeyedSingleton<IPipeline>(messageType, (services, _) =>
+                new InboxMessagePipeline<TMessage>(services, configuration));
         return this;
-    }
-
-    private static DataflowPipeline<TMessage> BuildInboxMessageDataflowPipeline<TMessage>(IServiceProvider services)
-    {
-        return new DataflowPipelineBuilder<TMessage>()
-            .Build(async message =>
-            {
-                await using var scope = services.CreateAsyncScope();
-
-                await scope.ServiceProvider
-                    .GetRequiredService<IInboxMessageHandler<TMessage>>()
-                    .HandleAsync(message);
-            });
     }
 }

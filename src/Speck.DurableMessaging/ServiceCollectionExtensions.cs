@@ -20,11 +20,18 @@ public static class ServiceCollectionExtensions
         
         configure(configuration);
 
-        services.AddSingleton(configuration.InboxMessageRegistry);
+        services
+            .AddSingleton(configuration.InboxMessageTypeCollection)
+            .AddSingleton<InboxMessageFactory>()
+            .AddSingleton<MessageSerializer>();
 
         foreach (var inboxConfiguration in configuration.InboxConfigurations)
         {
-            services.AddSingleton<IHostedService>(provider => new InboxPollingService(provider, inboxConfiguration));
+            services.AddSingleton<IHostedService>(provider => new InboxPollingService(
+                provider,
+                inboxConfiguration,
+                provider.GetRequiredService<InboxMessageTypeCollection>(),
+                provider.GetRequiredService<MessageSerializer>()));
         }
         
         return services;

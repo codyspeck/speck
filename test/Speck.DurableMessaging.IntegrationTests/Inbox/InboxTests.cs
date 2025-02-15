@@ -24,20 +24,16 @@ public class InboxTests(MySqlFixture mySqlFixture, TestInboxRepository repositor
                     .UseMySql()))
             .Build();
         
+        await host.StartAsync();
+        
         await using var scope = host.Services.CreateAsyncScope();
         
-        await scope.ServiceProvider
-            .GetRequiredService<IInbox>()
-            .InsertAsync(new object());
-        
-        await scope.ServiceProvider
-            .GetRequiredService<IInbox>()
-            .InsertAsync(new object());
-        
-        await scope.ServiceProvider
-            .GetRequiredService<IInbox>()
-            .InsertAsync(new object());
+        var inbox = scope.ServiceProvider.GetRequiredService<IInbox>();
 
-        await Task.Delay(TimeSpan.FromSeconds(10));
+        await inbox.InsertAsync(new InboxMessage { Id = Guid.NewGuid() });
+        await inbox.InsertAsync(new InboxMessage { Id = Guid.NewGuid() });
+        await inbox.InsertAsync(new InboxMessage { Id = Guid.NewGuid() });
+
+        await Task.Delay(TimeSpan.FromSeconds(6));
     }
 }

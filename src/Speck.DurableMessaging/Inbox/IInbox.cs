@@ -8,7 +8,7 @@ public interface IInbox
     /// <summary>
     /// Inserts a message into the inbox. 
     /// </summary>
-    /// <param name="message">The inbox message.</param>
+    /// <param name="message">The message.</param>
     /// <returns>A task.</returns>
-    Task InsertAsync<TMessage>(TMessage message);
+    Task InsertAsync(object message);
 }

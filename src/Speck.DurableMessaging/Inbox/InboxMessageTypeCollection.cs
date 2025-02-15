@@ -1,6 +1,6 @@
 ﻿namespace Speck.DurableMessaging.Inbox;
 
-internal class InboxMessageRegistry
+internal class InboxMessageTypeCollection
 {
     private readonly Dictionary<Type, string> _messageStrings = [];
     private readonly Dictionary<string, Type> _messageTypes = [];
@@ -11,8 +11,13 @@ internal class InboxMessageRegistry
         _messageTypes.Add(messageType, typeof(TMessage));
     }
 
-    public string Get<TMessage>()
+    public string Get(object message)
     {
-        return _messageStrings[typeof(TMessage)];
+        return _messageStrings[message.GetType()];
+    }
+
+    public Type Get(string messageType)
+    {
+        return _messageTypes[messageType];
     }
 }
