@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Inbox;
 
 internal class InboxMessageFactory(InboxMessageTypeCollection typeCollection, MessageSerializer serializer)
 {

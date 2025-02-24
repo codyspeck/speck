@@ -1,17 +1,18 @@
 ﻿using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.DependencyInjection;
 using Speck.DataflowExtensions;
+using Speck.DurableMessaging.Common;
 
 namespace Speck.DurableMessaging.Inbox;
 
 internal class InboxMessagePipeline<TMessage> : IPipeline, IAsyncDisposable
 {
-    private readonly DataflowPipeline<TMessage> _pipeline;
+    private readonly DataflowPipeline<InboxMessageContext> _pipeline;
     private readonly IServiceProvider _services;
 
     public InboxMessagePipeline(IServiceProvider services, InboxMessageHandlerConfiguration configuration)
     {
-        _pipeline = new DataflowPipelineBuilder<TMessage>()
+        _pipeline = new DataflowPipelineBuilder<InboxMessageContext>()
             .Build(HandleInboxMessageAsync, new ExecutionDataflowBlockOptions
             {
                 BoundedCapacity = configuration.BoundedCapacity,
@@ -21,18 +22,34 @@ internal class InboxMessagePipeline<TMessage> : IPipeline, IAsyncDisposable
         _services = services;
     }
     
-    public async Task SendAsync(object message)
+    public async Task SendAsync(InboxMessageContext context)
     {
-        await _pipeline.SendAsync((TMessage)message);
+        await _pipeline.SendAsync(context);
     }
 
-    private async Task HandleInboxMessageAsync(TMessage message)
+    private async Task HandleInboxMessageAsync(InboxMessageContext context)
     {
         await using var scope = _services.CreateAsyncScope();
-        
+
         await scope.ServiceProvider
-            .GetRequiredService<IInboxMessageHandler<TMessage>>()
-            .HandleAsync(message);
+            .GetRequiredService<IUnitOfWork>()
+            .ExecuteInTransactionAsync(async () =>
+            {
+                var inboxMessage = await scope.ServiceProvider
+                    .GetRequiredService<IInboxMessageRepository>()
+                    .GetInboxMessageAsync(context.InboxMessageId, context.InboxMessageTable);
+
+                if (inboxMessage.ProcessedAt is not null)
+                    return;
+                
+                await scope.ServiceProvider
+                    .GetRequiredService<IInboxMessageHandler<TMessage>>()
+                    .HandleAsync((TMessage)context.Message);
+                
+                await scope.ServiceProvider
+                    .GetRequiredService<IInboxMessageRepository>()
+                    .ProcessInboxMessageAsync(inboxMessage, context.InboxMessageTable);
+            });
     }
 
     public async ValueTask DisposeAsync()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Speck.DurableMessaging.Common;
 
 namespace Speck.DurableMessaging.Inbox;
 
@@ -14,11 +15,23 @@ internal class InboxPollingService(
         while (!stoppingToken.IsCancellationRequested)
         {
             await using var scope = services.CreateAsyncScope();
+
+            var inboxMessages = Enumerable.Empty<InboxMessage>();
             
-            var repository = scope.ServiceProvider.GetRequiredService<IInboxMessageRepository>();
+            await scope.ServiceProvider
+                .GetRequiredService<IUnitOfWork>()
+                .ExecuteInTransactionAsync(async () =>
+                {
+                    var repository = scope.ServiceProvider.GetRequiredService<IInboxMessageRepository>();
 
-            var inboxMessages = await repository.GetInboxMessagesAsync(configuration.Table, configuration.PollSize);
+                    inboxMessages = await repository.GetInboxMessagesAsync(configuration.Table, configuration.PollSize);
 
+                    await repository.LockInboxMessagesAsync(
+                        inboxMessages,
+                        configuration.Table,
+                        DateTime.UtcNow.AddMinutes(5));
+                });
+            
             foreach (var inboxMessage in inboxMessages)
             {
                 var message = messageSerializer.Deserialize(
@@ -27,7 +40,7 @@ internal class InboxPollingService(
                 
                 await scope.ServiceProvider
                     .GetRequiredKeyedService<IPipeline>(inboxMessage.Type)
-                    .SendAsync(message);
+                    .SendAsync(new InboxMessageContext(inboxMessage.Id, configuration.Table, message));
             }
             
             await Task.Delay(configuration.IdlePollingInterval, stoppingToken);
