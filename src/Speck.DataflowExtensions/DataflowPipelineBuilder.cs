@@ -44,7 +44,9 @@ public class DataflowPipelineBuilder<TInput>
         Func<TInput, TOutput> selector,
         ExecutionDataflowBlockOptions options)
     {
-        return new DataflowPipelineBuilder<TInput, TOutput>(new TransformBlock<TInput, TOutput>(selector, options));
+        var block = new TransformBlock<TInput, TOutput>(selector, options);
+        
+        return new DataflowPipelineBuilder<TInput, TOutput>(block, block);
     }
     
     public DataflowPipelineBuilder<TInput, TOutput> Select<TOutput>(Func<TInput, Task<TOutput>> func)
@@ -56,88 +58,20 @@ public class DataflowPipelineBuilder<TInput>
         Func<TInput, Task<TOutput>> selector,
         ExecutionDataflowBlockOptions options)
     {
-        return new DataflowPipelineBuilder<TInput, TOutput>(new TransformBlock<TInput, TOutput>(selector, options));
+        var block = new TransformBlock<TInput, TOutput>(selector, options);
+        
+        return new DataflowPipelineBuilder<TInput, TOutput>(block, block);
     }
 }
 
 public class DataflowPipelineBuilder<TInput, TOutput>
 {
-    private readonly IPropagatorBlock<TInput, TOutput> _inputBlock;
-    
-    internal DataflowPipelineBuilder(IPropagatorBlock<TInput, TOutput> inputBlock)
-    {
-        _inputBlock = inputBlock;
-    }
-    
-    public DataflowPipeline<TInput> Build(Action<TOutput> action)
-    {
-        return Build(action, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
-    }
-    
-    public DataflowPipeline<TInput> Build(Action<TOutput> action, ExecutionDataflowBlockOptions options)
-    {
-        var terminalBlock = new ActionBlock<TOutput>(action, options);
-        
-        _inputBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
-        
-        return new DataflowPipeline<TInput>(_inputBlock, terminalBlock);
-    }
-    
-    public DataflowPipeline<TInput> Build(Func<TOutput, Task> func)
-    {
-        return Build(func, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
-    }
-    
-    public DataflowPipeline<TInput> Build(Func<TOutput, Task> func, ExecutionDataflowBlockOptions options)
-    {
-        var terminalBlock = new ActionBlock<TOutput>(func, options);
-        
-        _inputBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
-        
-        return new DataflowPipeline<TInput>(_inputBlock, terminalBlock);
-    }
-
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(Func<TOutput, TNext> func)
-    {
-        return Select(func, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
-    }
-    
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(
-        Func<TOutput, TNext> func,
-        ExecutionDataflowBlockOptions options)
-    {
-        var terminalBlock = new TransformBlock<TOutput, TNext>(func, options);
-        
-        _inputBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
-        
-        return new DataflowPipelineBuilder<TInput, TOutput, TNext>(_inputBlock, terminalBlock);
-    }
-    
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(Func<TOutput, Task<TNext>> func)
-    {
-        return Select(func, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
-    }
-    
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(
-        Func<TOutput, Task<TNext>> func,
-        ExecutionDataflowBlockOptions options)
-    {
-        var terminalBlock = new TransformBlock<TOutput, TNext>(func, options);
-        
-        _inputBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
-        
-        return new DataflowPipelineBuilder<TInput, TOutput, TNext>(_inputBlock, terminalBlock);
-    }
-}
-
-public class DataflowPipelineBuilder<TInput, TPrevious, TOutput>
-{
     private readonly ITargetBlock<TInput> _inputBlock;
-    private readonly IPropagatorBlock<TPrevious, TOutput> _terminalBlock;
+    private readonly IReceivableSourceBlock<TOutput> _terminalBlock;
     
     internal DataflowPipelineBuilder(
         ITargetBlock<TInput> inputBlock,
-        IPropagatorBlock<TPrevious, TOutput> terminalBlock)
+        IReceivableSourceBlock<TOutput> terminalBlock)
     {
         _inputBlock = inputBlock;
         _terminalBlock = terminalBlock;
@@ -171,12 +105,12 @@ public class DataflowPipelineBuilder<TInput, TPrevious, TOutput>
         return new DataflowPipeline<TInput>(_inputBlock, terminalBlock);
     }
 
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(Func<TOutput, TNext> func)
+    public DataflowPipelineBuilder<TInput, TNext> Select<TNext>(Func<TOutput, TNext> func)
     {
         return Select(func, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
     }
     
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(
+    public DataflowPipelineBuilder<TInput, TNext> Select<TNext>(
         Func<TOutput, TNext> func,
         ExecutionDataflowBlockOptions options)
     {
@@ -184,15 +118,15 @@ public class DataflowPipelineBuilder<TInput, TPrevious, TOutput>
         
         _terminalBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
         
-        return new DataflowPipelineBuilder<TInput, TOutput, TNext>(_inputBlock, terminalBlock);
+        return new DataflowPipelineBuilder<TInput, TNext>(_inputBlock, terminalBlock);
     }
     
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(Func<TOutput, Task<TNext>> func)
+    public DataflowPipelineBuilder<TInput, TNext> Select<TNext>(Func<TOutput, Task<TNext>> func)
     {
         return Select(func, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
     }
     
-    public DataflowPipelineBuilder<TInput, TOutput, TNext> Select<TNext>(
+    public DataflowPipelineBuilder<TInput, TNext> Select<TNext>(
         Func<TOutput, Task<TNext>> func,
         ExecutionDataflowBlockOptions options)
     {
@@ -200,6 +134,6 @@ public class DataflowPipelineBuilder<TInput, TPrevious, TOutput>
         
         _terminalBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
         
-        return new DataflowPipelineBuilder<TInput, TOutput, TNext>(_inputBlock, terminalBlock);
+        return new DataflowPipelineBuilder<TInput, TNext>(_inputBlock, terminalBlock);
     }
 }
