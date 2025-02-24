@@ -11,6 +11,13 @@ file static class DataflowPipelineBuilder
 
 public class DataflowPipelineBuilder<TInput>
 {
+    public DataflowPipelineBuilder<TInput, TInput[]> Batch(int batchSize, TimeSpan timeout)
+    {
+        var block = BatchedTimeoutBlock.Create<TInput>(batchSize, timeout);
+        
+        return new DataflowPipelineBuilder<TInput, TInput[]>(block, block);
+    }
+    
     public DataflowPipeline<TInput> Build(Action<TInput> action)
     {
         return Build(action, DataflowPipelineBuilder.ExecutionDataflowBlockOptions);
@@ -67,14 +74,23 @@ public class DataflowPipelineBuilder<TInput>
 public class DataflowPipelineBuilder<TInput, TOutput>
 {
     private readonly ITargetBlock<TInput> _inputBlock;
-    private readonly IReceivableSourceBlock<TOutput> _terminalBlock;
+    private readonly ISourceBlock<TOutput> _terminalBlock;
     
     internal DataflowPipelineBuilder(
         ITargetBlock<TInput> inputBlock,
-        IReceivableSourceBlock<TOutput> terminalBlock)
+        ISourceBlock<TOutput> terminalBlock)
     {
         _inputBlock = inputBlock;
         _terminalBlock = terminalBlock;
+    }
+
+    public DataflowPipelineBuilder<TInput, TOutput[]> Batch(int batchSize, TimeSpan timeout)
+    {
+        var terminalBlock = BatchedTimeoutBlock.Create<TOutput>(batchSize, timeout);
+
+        _terminalBlock.LinkTo(terminalBlock, DataflowPipelineBuilder.DataflowLinkOptions);
+        
+        return new DataflowPipelineBuilder<TInput, TOutput[]>(_inputBlock, terminalBlock);
     }
     
     public DataflowPipeline<TInput> Build(Action<TOutput> action)

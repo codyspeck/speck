@@ -19,6 +19,11 @@ public class DataflowPipelineTests
             _items.Add(item);
         }
 
+        public void AddRange(IEnumerable<T> items)
+        {
+            _items.AddRange(items);
+        }
+
         public Task AddAsync(T item)
         {
             _items.Add(item);
@@ -56,6 +61,23 @@ public class DataflowPipelineTests
     }
     
     [Test]
+    public async Task Single_stage_pipeline_batches()
+    {
+        var expected = _fixture.CreateMany<string>().ToList();
+
+        var pipeline = new DataflowPipelineBuilder<string>()
+            .Batch(expected.Count, Timeout.InfiniteTimeSpan)
+            .Build(_observer.AddRange);
+
+        foreach (var item in expected)
+            await pipeline.SendAsync(item);
+        
+        await pipeline.DisposeAsync();
+        
+        _observer.Items.ShouldBe(expected);
+    }
+    
+    [Test]
     public async Task Single_stage_pipeline_performs_action()
     {
         var expected = _fixture.Create<string>();
@@ -82,7 +104,25 @@ public class DataflowPipelineTests
         
         _observer.Items.ShouldContain(expected);
     }
+    
+    [Test]
+    public async Task Two_stage_pipeline_batches()
+    {
+        var expected = _fixture.CreateMany<string>().ToList();
 
+        var pipeline = new DataflowPipelineBuilder<string>()
+            .Select(item => item)
+            .Batch(expected.Count, Timeout.InfiniteTimeSpan)
+            .Build(_observer.AddRange);
+
+        foreach (var item in expected)
+            await pipeline.SendAsync(item);
+        
+        await pipeline.DisposeAsync();
+        
+        _observer.Items.ShouldBe(expected);
+    }
+    
     [Test]
     public async Task Two_stage_pipeline_performs_transformation()
     {
