@@ -42,11 +42,11 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
     {
         return (await connection.QueryAsync<InboxMessage>(
             $"""
-             SELECT id, type, content, created_at, locked_until, processed_at
-             FROM {inboxMessageTable}
-             WHERE id IN @inboxMessageIds
-             FOR UPDATE;
-             """,
+            SELECT id, type, content, created_at, locked_until, processed_at
+            FROM {inboxMessageTable}
+            WHERE id IN @inboxMessageIds
+            FOR UPDATE;
+            """,
             new
             {
                 inboxMessageIds
