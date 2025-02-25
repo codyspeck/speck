@@ -36,6 +36,22 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
         return inboxMessages.ToArray();
     }
 
+    public async Task InsertAsync(InboxMessage inboxMessage, string inboxMessageTable)
+    {
+        await connection.ExecuteAsync(
+            $"""
+            INSERT INTO {inboxMessageTable} (id, type, content, created_at)
+            VALUES (@id, @type, @content, @created_at);
+            """,
+            new
+            {
+                id = inboxMessage.Id,
+                type = inboxMessage.Type,
+                content = inboxMessage.Content,
+                created_at = inboxMessage.CreatedAt
+            });
+    }
+
     public async Task LockInboxMessagesAsync(
         IReadOnlyCollection<InboxMessage> messages,
         string inboxMessageTable,

@@ -26,10 +26,14 @@ public static class ServiceCollectionExtensions
             .AddSingleton<InboxMessageFactory>()
             .AddSingleton<MessageSerializer>()
             .AddSingleton<InboxSignals>()
-            .AddScoped<InboxSignalScope>();
+            .AddSingleton<InboxMessageTables>()
+            .AddScoped<InboxSignalScope>()
+            .AddTransient<IInbox, Inbox.Inbox>();
 
         foreach (var inboxConfiguration in configuration.InboxConfigurations)
         {
+            services.AddSingleton(inboxConfiguration);
+            
             services.AddSingleton<IHostedService>(provider => new InboxPollingService(
                 provider,
                 inboxConfiguration,

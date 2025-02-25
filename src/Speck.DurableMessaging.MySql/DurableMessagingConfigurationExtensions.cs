@@ -13,7 +13,6 @@ public static class DurableMessagingConfigurationExtensions
     /// <returns>This.</returns>
     public static DurableMessagingConfiguration UseMySql(this DurableMessagingConfiguration configuration)
     {
-        configuration.Services.AddTransient<IInbox, MySqlInbox>();
         configuration.Services.AddTransient<IInboxMessageRepository, MySqlInboxMessageRepository>();
         configuration.Services.AddTransient<IUnitOfWork, MySqlUnitOfWork>();
         

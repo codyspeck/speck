@@ -13,6 +13,20 @@ public class InboxConfiguration
 
     internal TimeSpan IdlePollingInterval { get; private set; } = DefaultPollingInterval;
 
+    internal HashSet<Type> InboxMessageTypes { get; } = [];
+
+    /// <summary>
+    /// Designates messages of a given type to be inserted into this inbox. If an inbox has no message types configured
+    /// then it is considered the "default" inbox that will receive all non-configured message types.
+    /// </summary>
+    /// <typeparam name="TMessage">The message type.</typeparam>
+    /// <returns>This.</returns>
+    public InboxConfiguration HandlesMessageType<TMessage>()
+    {
+        InboxMessageTypes.Add(typeof(TMessage));
+        return this;
+    }
+    
     /// <summary>
     /// Configures the name of the inbox message table to use. The default is "inbox_message".
     /// </summary>
