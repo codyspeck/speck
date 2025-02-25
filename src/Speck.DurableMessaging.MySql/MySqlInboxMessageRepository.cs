@@ -40,15 +40,17 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
     {
         await connection.ExecuteAsync(
             $"""
-            INSERT INTO {inboxMessageTable} (id, type, content, created_at)
-            VALUES (@id, @type, @content, @created_at);
+            INSERT INTO {inboxMessageTable} (id, type, content, message_key, created_at, locked_until)
+            VALUES (@id, @type, @content, @message_key, @created_at, @locked_until);
             """,
             new
             {
                 id = inboxMessage.Id,
                 type = inboxMessage.Type,
                 content = inboxMessage.Content,
-                created_at = inboxMessage.CreatedAt
+                message_key = inboxMessage.MessageKey,
+                created_at = inboxMessage.CreatedAt,
+                locked_until = inboxMessage.LockedUntil
             });
     }
 

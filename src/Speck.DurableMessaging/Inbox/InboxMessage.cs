@@ -8,6 +8,8 @@ internal class InboxMessage
 
     public string Content { get; init; } = string.Empty;
 
+    public string? MessageKey { get; init; }
+
     public DateTime CreatedAt { get; init; }
 
     public DateTime? LockedUntil { get; init; }

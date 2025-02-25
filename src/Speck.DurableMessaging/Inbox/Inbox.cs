@@ -6,11 +6,16 @@ internal class Inbox(
     InboxMessageTables tables,
     InboxSignalScope signals) : IInbox
 {
-    public async Task InsertAsync(object message)
+    public Task InsertAsync(object message)
     {
-        var inboxMessage = factory.Create(message);
+        return InsertAsync(new InboxMessageEnvelope(message));
+    }
 
-        var inboxTable = tables.GetInboxTable(message.GetType());
+    public async Task InsertAsync(InboxMessageEnvelope envelope)
+    {
+        var inboxMessage = factory.Create(envelope);
+
+        var inboxTable = tables.GetInboxTable(envelope.Message.GetType());
         
         await repository.InsertAsync(inboxMessage, inboxTable);
         

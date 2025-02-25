@@ -2,11 +2,13 @@
 
 internal class InboxMessageFactory(InboxMessageTypeCollection typeCollection, MessageSerializer serializer)
 {
-    public InboxMessage Create(object message) => new()
+    public InboxMessage Create(InboxMessageEnvelope envelope) => new()
     {
         Id = Guid.CreateVersion7(),
-        Content = serializer.Serialize(message),
-        Type = typeCollection.Get(message),
-        CreatedAt = DateTime.UtcNow
+        Content = serializer.Serialize(envelope.Message),
+        Type = typeCollection.Get(envelope.Message.GetType()),
+        MessageKey = envelope.MessageKey,
+        CreatedAt = DateTime.UtcNow,
+        LockedUntil = envelope.LockedUntil
     };
 }
