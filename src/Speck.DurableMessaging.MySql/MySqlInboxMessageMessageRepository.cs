@@ -37,10 +37,13 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
     }
 
     public async Task LockInboxMessagesAsync(
-        IEnumerable<InboxMessage> messages,
+        IReadOnlyCollection<InboxMessage> messages,
         string inboxMessageTable,
         DateTime lockedUntil)
     {
+        if (messages.Count == 0)
+            return;
+        
         await connection.ExecuteAsync(
             $"""
             UPDATE {inboxMessageTable}

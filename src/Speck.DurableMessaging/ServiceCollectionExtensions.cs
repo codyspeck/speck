@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Speck.DurableMessaging.Inbox;
 
 namespace Speck.DurableMessaging;
@@ -30,8 +31,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<IHostedService>(provider => new InboxPollingService(
                 provider,
                 inboxConfiguration,
-                provider.GetRequiredService<InboxMessageTypeCollection>(),
-                provider.GetRequiredService<MessageSerializer>()));
+                provider.GetService<ILogger<InboxPollingService>>()));
         }
         
         return services;

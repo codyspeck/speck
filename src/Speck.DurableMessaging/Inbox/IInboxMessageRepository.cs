@@ -6,7 +6,7 @@ internal interface IInboxMessageRepository
     
     Task<IReadOnlyCollection<InboxMessage>> GetInboxMessagesAsync(string inboxMessageTable, int count);
     
-    Task LockInboxMessagesAsync(IEnumerable<InboxMessage> messages, string inboxMessageTable, DateTime lockedUntil);
+    Task LockInboxMessagesAsync(IReadOnlyCollection<InboxMessage> messages, string inboxMessageTable, DateTime lockedUntil);
     
     Task ProcessInboxMessageAsync(InboxMessage message, string inboxMessageTable);
 }
