@@ -36,6 +36,24 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
         return inboxMessages.ToArray();
     }
 
+    public async Task<IReadOnlyCollection<InboxMessage>> GetInboxMessagesAsync(
+        IEnumerable<Guid> inboxMessageIds,
+        string inboxMessageTable)
+    {
+        return (await connection.QueryAsync<InboxMessage>(
+            $"""
+             SELECT id, type, content, created_at, locked_until, processed_at
+             FROM {inboxMessageTable}
+             WHERE id IN @inboxMessageIds
+             FOR UPDATE;
+             """,
+            new
+            {
+                inboxMessageIds
+            }))
+            .ToArray();
+    }
+
     public async Task InsertAsync(InboxMessage inboxMessage, string inboxMessageTable)
     {
         await connection.ExecuteAsync(
@@ -86,6 +104,20 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
             new
             {
                 inboxMessageId = message.Id,
+            });
+    }
+
+    public async Task ProcessInboxMessagesAsync(IReadOnlyCollection<InboxMessage> messages, string inboxMessageTable)
+    {
+        await connection.ExecuteAsync(
+            $"""
+            UPDATE {inboxMessageTable}
+            SET processed_at = NOW()
+            WHERE id IN @inboxMessageIds;
+            """,
+            new
+            {
+                inboxMessageIds = messages.Select(x => x.Id)
             });
     }
 }
