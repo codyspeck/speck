@@ -9,6 +9,7 @@ namespace Speck.DurableMessaging.Inbox;
 internal class InboxPollingService(
     IServiceProvider services,
     InboxConfiguration configuration,
+    InboxSignals signals,
     ILogger<InboxPollingService>? logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,8 +27,12 @@ internal class InboxPollingService(
             {
                 logger?.LogError(exception, "An unexpected error occurred while polling the inbox.");
             }
+
+            await Task.WhenAny(
+                signals.Get(configuration.Table),
+                Task.Delay(configuration.IdlePollingInterval, stoppingToken));
             
-            await Task.Delay(configuration.IdlePollingInterval, stoppingToken);
+            signals.Reset(configuration.Table);
         }
     }
 
