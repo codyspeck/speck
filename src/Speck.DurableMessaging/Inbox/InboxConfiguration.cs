@@ -2,16 +2,11 @@
 
 public class InboxConfiguration
 {
-    private const string DefaultInboxMessageTable = "inbox_message";
-    private const int DefaultPollSize = 1000;
-    
-    private static readonly TimeSpan DefaultPollingInterval = TimeSpan.FromSeconds(3);
+    internal string Table { get; private set; } = InboxDefaults.Table;
 
-    internal string Table { get; private set; } = DefaultInboxMessageTable;
+    internal int PollSize { get; private set; } = InboxDefaults.PollSize;
 
-    internal int PollSize { get; private set; } = DefaultPollSize;
-
-    internal TimeSpan IdlePollingInterval { get; private set; } = DefaultPollingInterval;
+    internal TimeSpan IdlePollingInterval { get; private set; } = InboxDefaults.IdlePollingInterval;
 
     internal HashSet<Type> InboxMessageTypes { get; } = [];
 
@@ -28,7 +23,7 @@ public class InboxConfiguration
     }
     
     /// <summary>
-    /// Configures the name of the inbox message table to use. The default is "inbox_message".
+    /// Configures the name of the inbox message table to use. The default is "inbox_messages".
     /// </summary>
     /// <param name="table">The inbox message table.</param>
     /// <returns>This.</returns>
@@ -41,7 +36,7 @@ public class InboxConfiguration
     
     /// <summary>
     /// Configures the number of inbox messages that will be polled at a time from the inbox message table. The default
-    /// is 1000.
+    /// is 100.
     /// </summary>
     /// <param name="pollSize">The poll size.</param>
     /// <returns>This.</returns>

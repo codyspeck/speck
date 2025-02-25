@@ -2,9 +2,9 @@
 
 public class InboxMessageHandlerConfiguration
 {
-    internal int MaxDegreeOfParallelism { get; private set; } = 1;
+    internal int MaxDegreeOfParallelism { get; private set; } = InboxDefaults.MaxDegreeOfParallelism;
 
-    internal int BoundedCapacity { get; private set; } = 100;
+    internal int BoundedCapacity { get; private set; } = InboxDefaults.BoundedCapacity;
 
     internal InboxMessageHandlerConfiguration()
     {
