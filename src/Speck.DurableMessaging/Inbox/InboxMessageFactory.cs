@@ -6,7 +6,7 @@ internal class InboxMessageFactory(InboxMessageTypeCollection typeCollection, Me
     {
         Id = Guid.CreateVersion7(),
         Content = serializer.Serialize(envelope.Message),
-        Type = typeCollection.Get(envelope.Message.GetType()),
+        Type = typeCollection.Get(envelope.Message),
         MessageKey = envelope.MessageKey,
         CreatedAt = DateTime.UtcNow,
         LockedUntil = envelope.LockedUntil
