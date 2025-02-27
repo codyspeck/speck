@@ -17,7 +17,7 @@ public sealed class DataflowPipeline<TInput> : IAsyncDisposable
     {
         return _inputBlock.SendAsync(item);
     }
-
+    
     public async ValueTask DisposeAsync()
     {
         _inputBlock.Complete();

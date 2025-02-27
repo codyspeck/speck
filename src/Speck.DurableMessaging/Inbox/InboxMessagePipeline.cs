@@ -12,7 +12,7 @@ internal class InboxMessagePipeline<TMessage> : IPipeline, IAsyncDisposable
 
     public InboxMessagePipeline(IServiceProvider services, InboxMessageHandlerConfiguration configuration)
     {
-        _pipeline = new DataflowPipelineBuilder<InboxMessageContext>()
+        _pipeline = DataflowPipelineBuilder.Create<InboxMessageContext>()
             .Build(HandleInboxMessageAsync, new ExecutionDataflowBlockOptions
             {
                 BoundedCapacity = configuration.BoundedCapacity,

@@ -39,7 +39,7 @@ public class DataflowPipelineTests
     [Test]
     public async Task Disposing_pipeline_throws_captured_exception()
     {
-        var pipeline = new DataflowPipelineBuilder<string>()
+        var pipeline = DataflowPipelineBuilder.Create<string>()
             .Build(_ => throw new TestException());
         
         await pipeline.SendAsync(_fixture.Create<string>());
@@ -52,7 +52,7 @@ public class DataflowPipelineTests
     {
         var cancellationTokenSource = new CancellationTokenSource();
         
-        var pipeline = new DataflowPipelineBuilder<string>()
+        var pipeline = DataflowPipelineBuilder.Create<string>()
             .Build(_ => { }, new ExecutionDataflowBlockOptions { CancellationToken = cancellationTokenSource.Token });
 
         await cancellationTokenSource.CancelAsync();
@@ -61,11 +61,11 @@ public class DataflowPipelineTests
     }
     
     [Test]
-    public async Task Single_stage_pipeline_batches()
+    public async Task Pipeline_batches_items()
     {
         var expected = _fixture.CreateMany<string>().ToList();
 
-        var pipeline = new DataflowPipelineBuilder<string>()
+        var pipeline = DataflowPipelineBuilder.Create<string>()
             .Batch(expected.Count, Timeout.InfiniteTimeSpan)
             .Build(_observer.AddRange);
 
@@ -78,57 +78,11 @@ public class DataflowPipelineTests
     }
     
     [Test]
-    public async Task Single_stage_pipeline_performs_action()
+    public async Task Pipeline_performs_transformation()
     {
         var expected = _fixture.Create<string>();
         
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Build(_observer.Add);
-        
-        await pipeline.SendAsync(expected);
-        await pipeline.DisposeAsync();
-        
-        _observer.Items.ShouldContain(expected);
-    }
-    
-    [Test]
-    public async Task Single_stage_pipeline_performs_async_action()
-    {
-        var expected = _fixture.Create<string>();
-        
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Build(_observer.AddAsync);
-        
-        await pipeline.SendAsync(expected);
-        await pipeline.DisposeAsync();
-        
-        _observer.Items.ShouldContain(expected);
-    }
-    
-    [Test]
-    public async Task Two_stage_pipeline_batches()
-    {
-        var expected = _fixture.CreateMany<string>().ToList();
-
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Select(item => item)
-            .Batch(expected.Count, Timeout.InfiniteTimeSpan)
-            .Build(_observer.AddRange);
-
-        foreach (var item in expected)
-            await pipeline.SendAsync(item);
-        
-        await pipeline.DisposeAsync();
-        
-        _observer.Items.ShouldBe(expected);
-    }
-    
-    [Test]
-    public async Task Two_stage_pipeline_performs_transformation()
-    {
-        var expected = _fixture.Create<string>();
-        
-        var pipeline = new DataflowPipelineBuilder<string>()
+        var pipeline = DataflowPipelineBuilder.Create<string>()
             .Select(_ => expected)
             .Build(_observer.Add);
         
@@ -139,43 +93,11 @@ public class DataflowPipelineTests
     }
     
     [Test]
-    public async Task Two_stage_pipeline_performs_async_transformation()
+    public async Task Pipeline_performs_async_transformation()
     {
         var expected = _fixture.Create<string>();
         
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Select(_ => Task.FromResult(expected))
-            .Build(_observer.AddAsync);
-        
-        await pipeline.SendAsync(expected);
-        await pipeline.DisposeAsync();
-        
-        _observer.Items.ShouldContain(expected);
-    }
-
-    [Test]
-    public async Task Three_stage_pipeline_performs_transformation()
-    {
-        var expected = _fixture.Create<string>();
-        
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Select(value => value)
-            .Select(_ => expected)
-            .Build(_observer.Add);
-        
-        await pipeline.SendAsync(expected);
-        await pipeline.DisposeAsync();
-        
-        _observer.Items.ShouldContain(expected);
-    }
-    
-    [Test]
-    public async Task Three_stage_pipeline_performs_async_transformation()
-    {
-        var expected = _fixture.Create<string>();
-        
-        var pipeline = new DataflowPipelineBuilder<string>()
-            .Select(value => value)
+        var pipeline = DataflowPipelineBuilder.Create<string>()
             .Select(_ => Task.FromResult(expected))
             .Build(_observer.AddAsync);
         

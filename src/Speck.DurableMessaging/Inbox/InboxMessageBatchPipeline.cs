@@ -11,7 +11,7 @@ internal class InboxMessageBatchPipeline<TMessage> : IPipeline, IAsyncDisposable
 
     public InboxMessageBatchPipeline(IServiceProvider services, InboxMessageBatchHandlerConfiguration configuration)
     {
-        _pipeline = new DataflowPipelineBuilder<InboxMessageContext>()
+        _pipeline = DataflowPipelineBuilder.Create<InboxMessageContext>()
             .Batch(configuration.BatchSize, configuration.BatchTimeout)
             .Build(HandleInboxMessageAsync);
         
