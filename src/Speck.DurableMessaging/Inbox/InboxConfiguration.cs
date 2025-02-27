@@ -8,6 +8,8 @@ public class InboxConfiguration
 
     internal TimeSpan IdlePollingInterval { get; private set; } = InboxDefaults.IdlePollingInterval;
 
+    internal TimeSpan MessageLockDuration { get; private set; } = InboxDefaults.MessageLockDuration;
+    
     internal HashSet<Type> InboxMessageTypes { get; } = [];
 
     /// <summary>
@@ -57,6 +59,23 @@ public class InboxConfiguration
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(idlePollingInterval, TimeSpan.Zero);
         IdlePollingInterval = idlePollingInterval;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures how long messages are locked for after the inbox polling process polls and locks the message
+    /// until they are considered timed out and eligible to be picked up again. The default is 30 seconds.
+    /// </summary>
+    /// <param name="messageLockDuration">The duration to lock messages for.</param>
+    /// <returns>This.</returns>
+    /// <remarks>
+    /// This behaves similar to AWS SQS's "Visibility Timeout" concept -
+    /// https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
+    /// </remarks>
+    public InboxConfiguration WithMessageLockDuration(TimeSpan messageLockDuration)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(messageLockDuration, TimeSpan.Zero);
+        MessageLockDuration = messageLockDuration;
         return this;
     }
 }

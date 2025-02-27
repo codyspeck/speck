@@ -15,4 +15,6 @@ internal static class InboxDefaults
     public static readonly TimeSpan BatchTimeout = TimeSpan.FromMilliseconds(20);
     
     public static readonly TimeSpan IdlePollingInterval = TimeSpan.FromSeconds(3);
+    
+    public static readonly TimeSpan MessageLockDuration = TimeSpan.FromSeconds(30);
 }

@@ -54,7 +54,7 @@ internal class InboxPollingService(
             await repository.LockInboxMessagesAsync(
                 inboxMessages,
                 configuration.Table,
-                DateTime.UtcNow.AddMinutes(5));
+                DateTime.UtcNow.Add(InboxDefaults.MessageLockDuration));
         });
             
         foreach (var inboxMessage in inboxMessages)
