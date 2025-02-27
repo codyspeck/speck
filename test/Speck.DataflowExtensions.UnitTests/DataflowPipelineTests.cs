@@ -76,6 +76,25 @@ public class DataflowPipelineTests
         
         _observer.Items.ShouldBe(expected);
     }
+
+    [Test]
+    public async Task Pipeline_filters_items()
+    {
+        var item1 = _fixture.Create<string>();
+        var item2 = _fixture.Create<string>();
+        var item3 = _fixture.Create<string>();
+
+        var pipeline = DataflowPipelineBuilder.Create<string>()
+            .Where(value => value == item1)
+            .Build(_observer.Add);
+        
+        await pipeline.SendAsync(item1);
+        await pipeline.SendAsync(item2);
+        await pipeline.SendAsync(item3);
+        await pipeline.DisposeAsync();
+        
+        _observer.Items.ShouldBe([item1]);
+    }
     
     [Test]
     public async Task Pipeline_performs_transformation()

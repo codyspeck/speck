@@ -91,4 +91,21 @@ public class DataflowPipelineBuilder<TInput, TOutput>
         
         return new DataflowPipelineBuilder<TInput, TNext>(_inputBlock, terminalBlock);
     }
+    
+    public DataflowPipelineBuilder<TInput, TOutput> Where(Predicate<TOutput> predicate)
+    {
+        return Where(predicate, Defaults.ExecutionDataflowBlockOptions);
+    }
+    
+    public DataflowPipelineBuilder<TInput, TOutput> Where(
+        Predicate<TOutput> predicate,
+        ExecutionDataflowBlockOptions options)
+    {
+        var terminalBlock = new TransformBlock<TOutput, TOutput>(x => x, options);
+        
+        _terminalBlock.LinkTo(terminalBlock, Defaults.DataflowLinkOptions, predicate);
+        _terminalBlock.LinkTo(DataflowBlock.NullTarget<TOutput>());
+        
+        return new DataflowPipelineBuilder<TInput, TOutput>(_inputBlock, terminalBlock);
+    }
 }
