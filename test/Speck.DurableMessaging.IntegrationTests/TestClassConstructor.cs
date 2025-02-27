@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AutoFixture;
+using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Speck.DurableMessaging.IntegrationTests.Inbox;
 using TUnit.Core.Interfaces;
@@ -15,10 +16,10 @@ public class TestClassConstructor : IClassConstructor, ITestEndEventReceiver
     {
         Services = new ServiceCollection()
             .AddSingleton<MySqlFixture>()
+            .AddSingleton<Fixture>()
             .AddScoped<MySqlConnection>(services => services
                 .GetRequiredService<MySqlFixture>()
                 .CreateConnection())
-            .AddSingleton<TestInboxRepository>()
             .BuildServiceProvider();
     }
 

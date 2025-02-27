@@ -11,7 +11,12 @@ public sealed class MySqlFixture : IAsyncDisposable
 
     public MySqlConnection CreateConnection()
     {
-        return new MySqlConnection(_container.GetConnectionString());
+        var connectionStringBuilder = new MySqlConnectionStringBuilder(_container.GetConnectionString())
+        {
+            IgnoreCommandTransaction = true
+        };
+        
+        return new MySqlConnection(connectionStringBuilder.ToString());
     }
     
     public async Task InitializeAsync()
@@ -23,6 +28,16 @@ public sealed class MySqlFixture : IAsyncDisposable
         await connection.ExecuteAsync(
             """
             CREATE TABLE inbox_messages (
+                id           CHAR(36)     NOT NULL PRIMARY KEY,
+                type         VARCHAR(100) NOT NULL,
+                content      JSON         NOT NULL,
+                message_key  VARCHAR(100) NULL,
+                created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                locked_until DATETIME     NULL,
+                processed_at DATETIME     NULL
+            );
+            
+            CREATE TABLE inbox_messages_2 (
                 id           CHAR(36)     NOT NULL PRIMARY KEY,
                 type         VARCHAR(100) NOT NULL,
                 content      JSON         NOT NULL,

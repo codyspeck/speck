@@ -27,8 +27,8 @@ internal class MySqlInboxMessageRepository(MySqlConnection connection) : IInboxM
             $"""
             SELECT id, type, content, created_at, locked_until, processed_at
             FROM {inboxMessageTable}
-            LIMIT @count
             WHERE processed_at IS NULL AND (locked_until IS NULL OR locked_until < NOW())
+            LIMIT @count
             FOR UPDATE SKIP LOCKED;
             """,
             new { count });
