@@ -78,7 +78,7 @@ public class DurableMessagingConfiguration
         Services
             .AddTransient<IMailboxMessageHandler<TMessage>, THandler>()
             .AddKeyedSingleton<IMailboxMessagePipeline>(messageType, (services, _) =>
-                new MailboxMessageMailboxMessagePipeline<TMessage>(services, configuration));
+                new MailboxMessagePipeline<TMessage>(services, configuration));
         return this;
     }
     
@@ -122,7 +122,7 @@ public class DurableMessagingConfiguration
         Services
             .AddTransient<IMailboxMessageBatchHandler<TMessage>, THandler>()
             .AddKeyedSingleton<IMailboxMessagePipeline>(messageType, (services, _) =>
-                new MailboxMessageBatchMailboxMessagePipeline<TMessage>(services, configuration));
+                new MailboxMessageBatchPipeline<TMessage>(services, configuration));
         return this;
     }
 }

@@ -4,12 +4,12 @@ using Speck.DurableMessaging.Common;
 
 namespace Speck.DurableMessaging.Mailbox;
 
-internal class MailboxMessageBatchMailboxMessagePipeline<TMessage> : IMailboxMessagePipeline, IAsyncDisposable
+internal class MailboxMessageBatchPipeline<TMessage> : IMailboxMessagePipeline, IAsyncDisposable
 {
     private readonly DataflowPipeline<MailboxMessageContext> _pipeline;
     private readonly IServiceProvider _services;
 
-    public MailboxMessageBatchMailboxMessagePipeline(IServiceProvider services, MailboxMessageBatchHandlerConfiguration configuration)
+    public MailboxMessageBatchPipeline(IServiceProvider services, MailboxMessageBatchHandlerConfiguration configuration)
     {
         _pipeline = DataflowPipelineBuilder.Create<MailboxMessageContext>()
             .Batch(configuration.BatchSize, configuration.BatchTimeout)
