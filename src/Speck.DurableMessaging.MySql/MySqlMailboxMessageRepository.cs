@@ -10,7 +10,7 @@ internal class MySqlMailboxMessageRepository(MySqlConnection connection) : IMail
     {
         return await connection.QueryFirstAsync<MailboxMessage>(
             $"""
-            SELECT id, type, content, created_at, locked_until, processed_at
+            SELECT id, type, content, message_key, created_at, locked_until, processed_at
             FROM {mailboxMessageTable}
             WHERE id = @mailboxMessageId
             FOR UPDATE;
@@ -25,7 +25,7 @@ internal class MySqlMailboxMessageRepository(MySqlConnection connection) : IMail
     {
         var mailboxMessages = await connection.QueryAsync<MailboxMessage>(
             $"""
-            SELECT id, type, content, created_at, locked_until, processed_at
+            SELECT id, type, content, message_key, created_at, locked_until, processed_at
             FROM {mailboxMessageTable}
             WHERE processed_at IS NULL AND (locked_until IS NULL OR locked_until < NOW())
             LIMIT @count
@@ -42,7 +42,7 @@ internal class MySqlMailboxMessageRepository(MySqlConnection connection) : IMail
     {
         return (await connection.QueryAsync<MailboxMessage>(
             $"""
-            SELECT id, type, content, created_at, locked_until, processed_at
+            SELECT id, type, content, message_key, created_at, locked_until, processed_at
             FROM {mailboxMessageTable}
             WHERE id IN @mailboxMessageIds
             FOR UPDATE;
