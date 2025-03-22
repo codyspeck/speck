@@ -27,7 +27,7 @@ public sealed class MySqlFixture : IAsyncDisposable
 
         await connection.ExecuteAsync(
             """
-            CREATE TABLE inbox_messages (
+            CREATE TABLE mailbox_messages (
                 id           CHAR(36)     NOT NULL PRIMARY KEY,
                 type         VARCHAR(100) NOT NULL,
                 content      JSON         NOT NULL,

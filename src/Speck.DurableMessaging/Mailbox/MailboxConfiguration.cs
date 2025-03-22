@@ -1,35 +1,35 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-public class InboxConfiguration
+public class MailboxConfiguration
 {
-    internal string Table { get; private set; } = InboxDefaults.Table;
+    internal string Table { get; private set; } = MailboxDefaults.Table;
 
-    internal int PollSize { get; private set; } = InboxDefaults.PollSize;
+    internal int PollSize { get; private set; } = MailboxDefaults.PollSize;
 
-    internal TimeSpan IdlePollingInterval { get; private set; } = InboxDefaults.IdlePollingInterval;
+    internal TimeSpan IdlePollingInterval { get; private set; } = MailboxDefaults.IdlePollingInterval;
 
-    internal TimeSpan MessageLockDuration { get; private set; } = InboxDefaults.MessageLockDuration;
+    internal TimeSpan MessageLockDuration { get; private set; } = MailboxDefaults.MessageLockDuration;
     
-    internal HashSet<Type> InboxMessageTypes { get; } = [];
+    internal HashSet<Type> MailboxMessageTypes { get; } = [];
 
     /// <summary>
-    /// Designates messages of a given type to be inserted into this inbox. If an inbox has no message types configured
-    /// then it is considered the "default" inbox that will receive all non-configured message types.
+    /// Designates messages of a given type to be inserted into this mailbox. If an mailbox has no message types configured
+    /// then it is considered the "default" mailbox that will receive all non-configured message types.
     /// </summary>
     /// <typeparam name="TMessage">The message type.</typeparam>
     /// <returns>This.</returns>
-    public InboxConfiguration HandlesMessageType<TMessage>()
+    public MailboxConfiguration HandlesMessageType<TMessage>()
     {
-        InboxMessageTypes.Add(typeof(TMessage));
+        MailboxMessageTypes.Add(typeof(TMessage));
         return this;
     }
     
     /// <summary>
-    /// Configures the name of the inbox message table to use. The default is "inbox_messages".
+    /// Configures the name of the mailbox message table to use. The default is "mailbox_messages".
     /// </summary>
-    /// <param name="table">The inbox message table.</param>
+    /// <param name="table">The mailbox message table.</param>
     /// <returns>This.</returns>
-    public InboxConfiguration WithTable(string table)
+    public MailboxConfiguration WithTable(string table)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(table);
         Table = table;
@@ -37,12 +37,12 @@ public class InboxConfiguration
     }
     
     /// <summary>
-    /// Configures the number of inbox messages that will be polled at a time from the inbox message table. The default
+    /// Configures the number of mailbox messages that will be polled at a time from the mailbox message table. The default
     /// is 100.
     /// </summary>
     /// <param name="pollSize">The poll size.</param>
     /// <returns>This.</returns>
-    public InboxConfiguration WithPollSize(int pollSize)
+    public MailboxConfiguration WithPollSize(int pollSize)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(pollSize, 0);
         PollSize = pollSize;
@@ -50,12 +50,12 @@ public class InboxConfiguration
     }
 
     /// <summary>
-    /// Configures the interval at which to poll the inbox message table when no available messages for processing
+    /// Configures the interval at which to poll the mailbox message table when no available messages for processing
     /// are queried. The default is three seconds.
     /// </summary>
     /// <param name="idlePollingInterval">The idle polling interval.</param>
     /// <returns>This.</returns>
-    public InboxConfiguration WithIdlePollingInterval(TimeSpan idlePollingInterval)
+    public MailboxConfiguration WithIdlePollingInterval(TimeSpan idlePollingInterval)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(idlePollingInterval, TimeSpan.Zero);
         IdlePollingInterval = idlePollingInterval;
@@ -63,7 +63,7 @@ public class InboxConfiguration
     }
 
     /// <summary>
-    /// Configures how long messages are locked for after the inbox polling process polls and locks the message
+    /// Configures how long messages are locked for after the mailbox polling process polls and locks the message
     /// until they are considered timed out and eligible to be picked up again. The default is 30 seconds.
     /// </summary>
     /// <param name="messageLockDuration">The duration to lock messages for.</param>
@@ -72,7 +72,7 @@ public class InboxConfiguration
     /// This behaves similar to AWS SQS's "Visibility Timeout" concept -
     /// https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
     /// </remarks>
-    public InboxConfiguration WithMessageLockDuration(TimeSpan messageLockDuration)
+    public MailboxConfiguration WithMessageLockDuration(TimeSpan messageLockDuration)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(messageLockDuration, TimeSpan.Zero);
         MessageLockDuration = messageLockDuration;

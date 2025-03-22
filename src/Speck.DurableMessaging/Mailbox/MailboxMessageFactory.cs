@@ -1,8 +1,8 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-internal class InboxMessageFactory(InboxMessageTypeCollection typeCollection, MessageSerializer serializer)
+internal class MailboxMessageFactory(MailboxMessageTypeCollection typeCollection, MessageSerializer serializer)
 {
-    public InboxMessage Create(InboxMessageEnvelope envelope) => new()
+    public MailboxMessage Create(MailboxMessageEnvelope envelope) => new()
     {
         Id = Guid.CreateVersion7(),
         Content = serializer.Serialize(envelope.Message),

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Speck.DurableMessaging.Inbox;
+using Speck.DurableMessaging.Mailbox;
 
 namespace Speck.DurableMessaging;
 
@@ -22,23 +22,23 @@ public static class ServiceCollectionExtensions
         configure(configuration);
 
         services
-            .AddSingleton(configuration.InboxMessageTypeCollection)
-            .AddSingleton<InboxMessageFactory>()
+            .AddSingleton(configuration.MailboxMessageTypeCollection)
+            .AddSingleton<MailboxMessageFactory>()
             .AddSingleton<MessageSerializer>()
-            .AddSingleton<InboxSignals>()
-            .AddSingleton<InboxMessageTables>()
-            .AddScoped<InboxSignalScope>()
-            .AddTransient<IInbox, Inbox.Inbox>();
+            .AddSingleton<MailboxSignals>()
+            .AddSingleton<MailboxMessageTables>()
+            .AddScoped<MailboxSignalScope>()
+            .AddTransient<IMailbox, Mailbox.Mailbox>();
 
-        foreach (var inboxConfiguration in configuration.InboxConfigurations)
+        foreach (var mailboxConfiguration in configuration.MailboxConfigurations)
         {
-            services.AddSingleton(inboxConfiguration);
+            services.AddSingleton(mailboxConfiguration);
             
-            services.AddSingleton<IHostedService>(provider => new InboxPollingService(
+            services.AddSingleton<IHostedService>(provider => new MailboxPollingService(
                 provider,
-                inboxConfiguration,
-                provider.GetRequiredService<InboxSignals>(),
-                provider.GetService<ILogger<InboxPollingService>>()));
+                mailboxConfiguration,
+                provider.GetRequiredService<MailboxSignals>(),
+                provider.GetService<ILogger<MailboxPollingService>>()));
         }
         
         return services;

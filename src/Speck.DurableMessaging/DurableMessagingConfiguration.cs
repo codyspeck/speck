@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Speck.DurableMessaging.Inbox;
+using Speck.DurableMessaging.Mailbox;
 
 namespace Speck.DurableMessaging;
 
@@ -7,9 +7,9 @@ public class DurableMessagingConfiguration
 {
     public IServiceCollection Services { get; }
     
-    internal InboxMessageTypeCollection InboxMessageTypeCollection { get; } = new();
+    internal MailboxMessageTypeCollection MailboxMessageTypeCollection { get; } = new();
 
-    internal List<InboxConfiguration> InboxConfigurations { get; } = [];
+    internal List<MailboxConfiguration> MailboxConfigurations { get; } = [];
 
     internal DurableMessagingConfiguration(IServiceCollection services)
     {
@@ -17,112 +17,112 @@ public class DurableMessagingConfiguration
     }
 
     /// <summary>
-    /// Adds an inbox. Multiple inboxes can be configured if each one has a uniquely configured inbox message table.
+    /// Adds an mailbox. Multiple mailboxes can be configured if each one has a uniquely configured mailbox message table.
     /// </summary>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInbox()
+    public DurableMessagingConfiguration AddMailbox()
     {
-        return AddInbox(_ => { });
+        return AddMailbox(_ => { });
     }
     
     /// <summary>
-    /// Adds an inbox. Multiple inboxes can be configured if each one has a uniquely configured inbox message table.
+    /// Adds an mailbox. Multiple mailboxes can be configured if each one has a uniquely configured mailbox message table.
     /// </summary>
-    /// <param name="configure">Configures the inbox.</param>
+    /// <param name="configure">Configures the mailbox.</param>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInbox(Action<InboxConfiguration> configure)
+    public DurableMessagingConfiguration AddMailbox(Action<MailboxConfiguration> configure)
     {
-        var configuration = new InboxConfiguration();
+        var configuration = new MailboxConfiguration();
         configure(configuration);
-        InboxConfigurations.Add(configuration);
+        MailboxConfigurations.Add(configuration);
         return this;
     }
     
     /// <summary>
-    /// Configures an <see cref="IInboxMessageHandler{TMessage}"/>. The handler will be registered as a transient
+    /// Configures an <see cref="IMailboxMessageHandler{TMessage}"/>. The handler will be registered as a transient
     /// service.
     /// </summary>
     /// <param name="messageType">
-    /// The string representation of the message type. This is stored in the inbox message table and correlated back to 
+    /// The string representation of the message type. This is stored in the mailbox message table and correlated back to 
     /// <see cref="TMessage"/> in the deserialization process.
     /// </param>
-    /// <typeparam name="THandler">The type of the inbox message handler to configure.</typeparam>
-    /// <typeparam name="TMessage">The type of the inbox message.</typeparam>
+    /// <typeparam name="THandler">The type of the mailbox message handler to configure.</typeparam>
+    /// <typeparam name="TMessage">The type of the mailbox message.</typeparam>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInboxMessageHandler<THandler, TMessage>(string messageType)
-        where THandler : class, IInboxMessageHandler<TMessage>
+    public DurableMessagingConfiguration AddMailboxMessageHandler<THandler, TMessage>(string messageType)
+        where THandler : class, IMailboxMessageHandler<TMessage>
     {
-        return AddInboxMessageHandler<THandler, TMessage>(messageType, _ => { }); 
+        return AddMailboxMessageHandler<THandler, TMessage>(messageType, _ => { }); 
     }
     
     /// <summary>
-    /// Configures an <see cref="IInboxMessageHandler{TMessage}"/>. The handler will be registered as a transient
+    /// Configures an <see cref="IMailboxMessageHandler{TMessage}"/>. The handler will be registered as a transient
     /// service.
     /// </summary>
     /// <param name="messageType">
-    /// The string representation of the message type. This is stored in the inbox message table and correlated back to 
+    /// The string representation of the message type. This is stored in the mailbox message table and correlated back to 
     /// <see cref="TMessage"/> in the deserialization process.
     /// </param>
-    /// <param name="configure">Configures the inbox message handler.</param>
-    /// <typeparam name="THandler">The type of the inbox message handler.</typeparam>
-    /// <typeparam name="TMessage">The type of the inbox message.</typeparam>
+    /// <param name="configure">Configures the mailbox message handler.</param>
+    /// <typeparam name="THandler">The type of the mailbox message handler.</typeparam>
+    /// <typeparam name="TMessage">The type of the mailbox message.</typeparam>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInboxMessageHandler<THandler, TMessage>(
+    public DurableMessagingConfiguration AddMailboxMessageHandler<THandler, TMessage>(
         string messageType,
-        Action<InboxMessageHandlerConfiguration> configure)
-        where THandler : class, IInboxMessageHandler<TMessage>
+        Action<MailboxMessageHandlerConfiguration> configure)
+        where THandler : class, IMailboxMessageHandler<TMessage>
     {
-        var configuration = new InboxMessageHandlerConfiguration();
+        var configuration = new MailboxMessageHandlerConfiguration();
         configure(configuration);
-        InboxMessageTypeCollection.Add<TMessage>(messageType);
+        MailboxMessageTypeCollection.Add<TMessage>(messageType);
         Services
-            .AddTransient<IInboxMessageHandler<TMessage>, THandler>()
-            .AddKeyedSingleton<IInboxMessagePipeline>(messageType, (services, _) =>
-                new InboxMessageInboxMessagePipeline<TMessage>(services, configuration));
+            .AddTransient<IMailboxMessageHandler<TMessage>, THandler>()
+            .AddKeyedSingleton<IMailboxMessagePipeline>(messageType, (services, _) =>
+                new MailboxMessageMailboxMessagePipeline<TMessage>(services, configuration));
         return this;
     }
     
     /// <summary>
-    /// Configures an <see cref="IInboxMessageBatchHandler{TMessage}"/>. The handler will be registered as a transient
+    /// Configures an <see cref="IMailboxMessageBatchHandler{TMessage}"/>. The handler will be registered as a transient
     /// service.
     /// </summary>
     /// <param name="messageType">
-    /// The string representation of the message type. This is stored in the inbox message table and correlated back to 
+    /// The string representation of the message type. This is stored in the mailbox message table and correlated back to 
     /// <see cref="TMessage"/> in the deserialization process.
     /// </param>
-    /// <typeparam name="THandler">The type of the inbox message batch handler.</typeparam>
-    /// <typeparam name="TMessage">The type of the inbox message.</typeparam>
+    /// <typeparam name="THandler">The type of the mailbox message batch handler.</typeparam>
+    /// <typeparam name="TMessage">The type of the mailbox message.</typeparam>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInboxMessageBatchHandler<THandler, TMessage>(string messageType)
-        where THandler : class, IInboxMessageBatchHandler<TMessage>
+    public DurableMessagingConfiguration AddMailboxMessageBatchHandler<THandler, TMessage>(string messageType)
+        where THandler : class, IMailboxMessageBatchHandler<TMessage>
     {
-        return AddInboxMessageBatchHandler<THandler, TMessage>(messageType, _ => { });
+        return AddMailboxMessageBatchHandler<THandler, TMessage>(messageType, _ => { });
     }
     
     /// <summary>
-    /// Configures an <see cref="IInboxMessageBatchHandler{TMessage}"/>. The handler will be registered as a transient
+    /// Configures an <see cref="IMailboxMessageBatchHandler{TMessage}"/>. The handler will be registered as a transient
     /// service.
     /// </summary>
     /// <param name="messageType">
-    /// The string representation of the message type. This is stored in the inbox message table and correlated back to 
+    /// The string representation of the message type. This is stored in the mailbox message table and correlated back to 
     /// <see cref="TMessage"/> in the deserialization process.
     /// </param>
-    /// <param name="configure">Configures the inbox message batch handler.</param>
-    /// <typeparam name="THandler">The type of the inbox message batch handler.</typeparam>
-    /// <typeparam name="TMessage">The type of the inbox message.</typeparam>
+    /// <param name="configure">Configures the mailbox message batch handler.</param>
+    /// <typeparam name="THandler">The type of the mailbox message batch handler.</typeparam>
+    /// <typeparam name="TMessage">The type of the mailbox message.</typeparam>
     /// <returns>This.</returns>
-    public DurableMessagingConfiguration AddInboxMessageBatchHandler<THandler, TMessage>(
+    public DurableMessagingConfiguration AddMailboxMessageBatchHandler<THandler, TMessage>(
         string messageType,
-        Action<InboxMessageBatchHandlerConfiguration> configure)
-        where THandler : class, IInboxMessageBatchHandler<TMessage>
+        Action<MailboxMessageBatchHandlerConfiguration> configure)
+        where THandler : class, IMailboxMessageBatchHandler<TMessage>
     {
-        var configuration = new InboxMessageBatchHandlerConfiguration();
+        var configuration = new MailboxMessageBatchHandlerConfiguration();
         configure(configuration);
-        InboxMessageTypeCollection.Add<TMessage>(messageType);
+        MailboxMessageTypeCollection.Add<TMessage>(messageType);
         Services
-            .AddTransient<IInboxMessageBatchHandler<TMessage>, THandler>()
-            .AddKeyedSingleton<IInboxMessagePipeline>(messageType, (services, _) =>
-                new InboxMessageBatchInboxMessagePipeline<TMessage>(services, configuration));
+            .AddTransient<IMailboxMessageBatchHandler<TMessage>, THandler>()
+            .AddKeyedSingleton<IMailboxMessagePipeline>(messageType, (services, _) =>
+                new MailboxMessageBatchMailboxMessagePipeline<TMessage>(services, configuration));
         return this;
     }
 }

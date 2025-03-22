@@ -1,16 +1,16 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-public class InboxMessageBatchHandlerConfiguration
+public class MailboxMessageBatchHandlerConfiguration
 {
-    internal int MaxDegreeOfParallelism { get; private set; } = InboxDefaults.MaxDegreeOfParallelism;
+    internal int MaxDegreeOfParallelism { get; private set; } = MailboxDefaults.MaxDegreeOfParallelism;
 
-    internal int BatchSize { get; private set; } = InboxDefaults.BatchSize;
+    internal int BatchSize { get; private set; } = MailboxDefaults.BatchSize;
     
-    internal int BoundedCapacity { get; private set; } = InboxDefaults.BoundedCapacity;
+    internal int BoundedCapacity { get; private set; } = MailboxDefaults.BoundedCapacity;
 
-    internal TimeSpan BatchTimeout { get; private set; } = InboxDefaults.BatchTimeout;
+    internal TimeSpan BatchTimeout { get; private set; } = MailboxDefaults.BatchTimeout;
     
-    internal InboxMessageBatchHandlerConfiguration()
+    internal MailboxMessageBatchHandlerConfiguration()
     {
     }
 
@@ -19,7 +19,7 @@ public class InboxMessageBatchHandlerConfiguration
     /// </summary>
     /// <param name="batchSize">The batch size.</param>
     /// <returns>This.</returns>
-    public InboxMessageBatchHandlerConfiguration WithBatchSize(int batchSize)
+    public MailboxMessageBatchHandlerConfiguration WithBatchSize(int batchSize)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(batchSize, 0);
         BatchSize = batchSize;
@@ -32,7 +32,7 @@ public class InboxMessageBatchHandlerConfiguration
     /// </summary>
     /// <param name="timeout">The batch timeout.</param>
     /// <returns>This.</returns>
-    public InboxMessageBatchHandlerConfiguration WithBatchTimeout(TimeSpan timeout)
+    public MailboxMessageBatchHandlerConfiguration WithBatchTimeout(TimeSpan timeout)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(timeout, TimeSpan.Zero);
         BatchTimeout = timeout;
@@ -44,7 +44,7 @@ public class InboxMessageBatchHandlerConfiguration
     /// </summary>
     /// <param name="boundedCapacity">The size of the buffer.</param>
     /// <returns>This.</returns>
-    public InboxMessageBatchHandlerConfiguration WithBoundedCapacity(int boundedCapacity)
+    public MailboxMessageBatchHandlerConfiguration WithBoundedCapacity(int boundedCapacity)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(boundedCapacity, 0);
         BoundedCapacity = boundedCapacity;
@@ -56,7 +56,7 @@ public class InboxMessageBatchHandlerConfiguration
     /// </summary>
     /// <param name="maxDegreeOfParallelism">The max degree of parallelism.</param>
     /// <returns>This.</returns>
-    public InboxMessageBatchHandlerConfiguration WithMaxDegreeOfParallelism(int maxDegreeOfParallelism)
+    public MailboxMessageBatchHandlerConfiguration WithMaxDegreeOfParallelism(int maxDegreeOfParallelism)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maxDegreeOfParallelism, 0);
         MaxDegreeOfParallelism = maxDegreeOfParallelism;

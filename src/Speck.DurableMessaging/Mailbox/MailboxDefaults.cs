@@ -1,8 +1,8 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-internal static class InboxDefaults
+internal static class MailboxDefaults
 {
-    public const string Table = "inbox_messages";
+    public const string Table = "mailbox_messages";
 
     public const int BatchSize = 10;
     

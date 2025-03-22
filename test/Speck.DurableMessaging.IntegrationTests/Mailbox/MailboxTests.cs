@@ -6,12 +6,12 @@ using MySqlConnector;
 using Polly;
 using Polly.Retry;
 using Shouldly;
-using Speck.DurableMessaging.Inbox;
+using Speck.DurableMessaging.Mailbox;
 using Speck.DurableMessaging.MySql;
 
-namespace Speck.DurableMessaging.IntegrationTests.Inbox;
+namespace Speck.DurableMessaging.IntegrationTests.Mailbox;
 
-public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
+public class MailboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
 {
     /// <summary>
     /// Retrying handles variations in latency when inserting messages into the inbox, waiting for them to be polled,
@@ -35,8 +35,8 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
                 .AddScoped(_ => mySqlFixture.CreateConnection())
                 .AddSingleton(observer)
                 .AddDurableMessaging(messaging => messaging
-                    .AddInbox()
-                    .AddInboxMessageHandler<TestInboxMessageHandler, TestInboxMessage>("test-inbox-message")
+                    .AddMailbox()
+                    .AddMailboxMessageHandler<TestInboxMessageHandler, TestInboxMessage>("test-inbox-message")
                     .UseMySql()))
             .Build();
         
@@ -45,7 +45,7 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
         await using (var scope = host.Services.CreateAsyncScope())
         {
             await scope.ServiceProvider
-                .GetRequiredService<IInbox>()
+                .GetRequiredService<IMailbox>()
                 .InsertAsync(testInboxMessage);
         }
 
@@ -68,10 +68,10 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
                 .AddScoped(_ => mySqlFixture.CreateConnection())
                 .AddSingleton(observer)
                 .AddDurableMessaging(messaging => messaging
-                    .AddInbox(inbox => inbox
+                    .AddMailbox(inbox => inbox
                         .WithTable("inbox_messages_2")
                         .WithPollSize(testInboxMessages.Length))
-                    .AddInboxMessageBatchHandler<TestInboxMessageBatchHandler, TestInboxMessage>(
+                    .AddMailboxMessageBatchHandler<TestInboxMessageBatchHandler, TestInboxMessage>(
                         "test-inbox-message",
                         handler => handler.WithBatchSize(testInboxMessages.Length))
                     .UseMySql()))
@@ -87,7 +87,7 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
             
             await using var transaction = await connection.BeginTransactionAsync();
 
-            var inbox = scope.ServiceProvider.GetRequiredService<IInbox>();
+            var inbox = scope.ServiceProvider.GetRequiredService<IMailbox>();
 
             foreach (var message in testInboxMessages)
                 await inbox.InsertAsync(message);
@@ -100,7 +100,7 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
 
     private record TestInboxMessage(Guid Id);
 
-    private class TestInboxMessageHandler(TestObserver<TestInboxMessage> observer) : IInboxMessageHandler<TestInboxMessage>
+    private class TestInboxMessageHandler(TestObserver<TestInboxMessage> observer) : IMailboxMessageHandler<TestInboxMessage>
     {
         public Task HandleAsync(TestInboxMessage message)
         {
@@ -110,7 +110,7 @@ public class InboxTests(MySqlFixture mySqlFixture, Fixture fixture) : TestBase
     }
     
     private class TestInboxMessageBatchHandler(TestObserver<TestInboxMessage[]> observer)
-        : IInboxMessageBatchHandler<TestInboxMessage>
+        : IMailboxMessageBatchHandler<TestInboxMessage>
     {
         public Task HandleAsync(IReadOnlyCollection<TestInboxMessage> messages)
         {

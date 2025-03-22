@@ -1,6 +1,6 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-public class InboxMessageEnvelope(object message)
+public class MailboxMessageEnvelope(object message)
 {
     public object Message { get; } = message;
 
@@ -8,13 +8,13 @@ public class InboxMessageEnvelope(object message)
 
     public DateTime? LockedUntil { get; private set; }
 
-    public InboxMessageEnvelope WithMessageKey(string messageKey)
+    public MailboxMessageEnvelope WithMessageKey(string messageKey)
     {
         MessageKey = messageKey;
         return this;
     }
 
-    public InboxMessageEnvelope WithLockedUntil(DateTime lockedUntil)
+    public MailboxMessageEnvelope WithLockedUntil(DateTime lockedUntil)
     {
         LockedUntil = lockedUntil;
         return this;

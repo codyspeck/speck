@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
-using Speck.DurableMessaging.IntegrationTests.Inbox;
 using TUnit.Core.Interfaces;
 
 namespace Speck.DurableMessaging.IntegrationTests;

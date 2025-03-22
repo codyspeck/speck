@@ -1,6 +1,6 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-internal class InboxMessageTypeCollection
+internal class MailboxMessageTypeCollection
 {
     private readonly Dictionary<Type, string> _messageStrings = [];
     private readonly Dictionary<string, Type> _messageTypes = [];

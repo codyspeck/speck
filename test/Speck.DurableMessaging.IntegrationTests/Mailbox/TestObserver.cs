@@ -1,4 +1,4 @@
-﻿namespace Speck.DurableMessaging.IntegrationTests.Inbox;
+﻿namespace Speck.DurableMessaging.IntegrationTests.Mailbox;
 
 public class TestObserver<TItem>
 {

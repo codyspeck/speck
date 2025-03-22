@@ -1,6 +1,6 @@
-﻿namespace Speck.DurableMessaging.Inbox;
+﻿namespace Speck.DurableMessaging.Mailbox;
 
-internal class InboxMessage
+internal class MailboxMessage
 {
     public Guid Id { get; init; }
 
