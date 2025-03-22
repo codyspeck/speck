@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Speck.DurableMessaging.Inbox;
-using Speck.DurableMessaging.Outbox;
 
 namespace Speck.DurableMessaging;
 
@@ -30,15 +29,6 @@ public static class ServiceCollectionExtensions
             .AddSingleton<InboxMessageTables>()
             .AddScoped<InboxSignalScope>()
             .AddTransient<IInbox, Inbox.Inbox>();
-        
-        services
-            .AddSingleton(configuration.OutboxMessageTypeCollection)
-            .AddSingleton<OutboxMessageFactory>()
-            .AddSingleton<MessageSerializer>()
-            .AddSingleton<OutboxSignals>()
-            .AddSingleton<OutboxMessageTables>()
-            .AddScoped<OutboxSignalScope>()
-            .AddTransient<IOutbox, Outbox.Outbox>();
 
         foreach (var inboxConfiguration in configuration.InboxConfigurations)
         {
@@ -49,17 +39,6 @@ public static class ServiceCollectionExtensions
                 inboxConfiguration,
                 provider.GetRequiredService<InboxSignals>(),
                 provider.GetService<ILogger<InboxPollingService>>()));
-        }
-        
-        foreach (var outboxConfiguration in configuration.OutboxConfigurations)
-        {
-            services.AddSingleton(outboxConfiguration);
-            
-            services.AddSingleton<IHostedService>(provider => new OutboxPollingService(
-                provider,
-                outboxConfiguration,
-                provider.GetRequiredService<OutboxSignals>(),
-                provider.GetService<ILogger<OutboxPollingService>>()));
         }
         
         return services;
