@@ -8,6 +8,6 @@ public class MessagingSqsConfiguration
 
     public MessagingSqsConfiguration AddSender<TMessage>(string queueUrl)
     {
-        
+        return this;
     }
 }
