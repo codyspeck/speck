@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Speck.DataflowExtensions;
 using Speck.DurableMessaging.Common;
 
@@ -31,25 +32,39 @@ internal class MailboxMessagePipeline<TMessage> : IMailboxMessagePipeline, IAsyn
     {
         await using var scope = _services.CreateAsyncScope();
 
-        await scope.ServiceProvider
-            .GetRequiredService<IUnitOfWork>()
-            .ExecuteInTransactionAsync(async () =>
-            {
-                var mailboxMessage = await scope.ServiceProvider
-                    .GetRequiredService<IMailboxMessageRepository>()
-                    .GetMailboxMessageAsync(context.MailboxMessageId, context.MailboxMessageTable);
+        try
+        {
+            await scope.ServiceProvider
+                .GetRequiredService<IUnitOfWork>()
+                .ExecuteInTransactionAsync(async () =>
+                {
+                    var mailboxMessage = await scope.ServiceProvider
+                        .GetRequiredService<IMailboxMessageRepository>()
+                        .GetMailboxMessageAsync(context.MailboxMessageId, context.MailboxMessageTable);
 
-                if (mailboxMessage.ProcessedAt is not null)
-                    return;
-                
-                await scope.ServiceProvider
-                    .GetRequiredService<IMailboxMessageHandler<TMessage>>()
-                    .HandleAsync((TMessage)context.Message);
-                
-                await scope.ServiceProvider
-                    .GetRequiredService<IMailboxMessageRepository>()
-                    .ProcessMailboxMessageAsync(mailboxMessage, context.MailboxMessageTable);
-            });
+                    if (mailboxMessage.ProcessedAt is not null)
+                        return;
+
+                    await scope.ServiceProvider
+                        .GetRequiredService<IMailboxMessageHandler<TMessage>>()
+                        .HandleAsync((TMessage)context.Message);
+
+                    await scope.ServiceProvider
+                        .GetRequiredService<IMailboxMessageRepository>()
+                        .ProcessMailboxMessageAsync(mailboxMessage, context.MailboxMessageTable);
+                });
+        }
+        catch (Exception exception)
+        {
+            scope.ServiceProvider
+                .GetService<ILogger<MailboxMessagePipeline<TMessage>>>()?
+                .LogError(
+                    exception,
+                    "Failed to process mailbox message {MailboxMessageId} in table {MailboxMessageTable}.",
+                    context.MailboxMessageId,
+                    context.MailboxMessageTable);
+        }
+        
     }
 
     public async ValueTask DisposeAsync()
